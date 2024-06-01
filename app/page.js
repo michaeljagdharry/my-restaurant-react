@@ -4,14 +4,80 @@ import styles from "./page.module.css";
 import "./style.css";
 import  {useState} from 'react';
 
+const foodData = [ //Quantity=1 so this holds when adding to cart initially
+    {id: "appetizer1", name: "Fries", price: 5, quantity: 1},
+    {id: "appetizer2", name: "Mac & Cheese", price: 3, quantity: 1},
+    {id: "appetizer3", name: "Cucumber Roll", price: 4, quantity: 1},
+    {id: "burger1", name: "Single Cheeseburger", price: 10, quantity: 1},
+    {id: "burger2", name: "Double Cheeseburger", price: 12, quantity: 1},
+    {id: "burger3", name: "Triple Cheeseburger", price: 1, quantity: 1},
+    {id: "salad1", name: "Caesar Salad", price: 6, quantity: 1},
+    {id: "salad2", name: "Cucumber Salad", price: 5, quantity: 1},
+    {id: "salad3", name: "Chicken Salad", price: 7, quantity: 1}
+];
 
-
-export default function Home() {
+const MenuItem = (props) => {
   return (
     <div>
-    <Menu></Menu>
+      <img src={props.Src}></img>
+      <button onClick={() => addToCart(props.id)}>Add To Cart</button>
+    </div>
+  )
+}
+
+const Menu = () => {
+  return (
+    <div className="container">
+      {foodData.map(x => <MenuItem Src={`food/${x.id}.jpg`} id={x.id}></MenuItem>)}
+    </div>
+  )
+}
+
+const CartRow = (props) => {
+  return (
+    <tr>
+      <td>{props}</td>
+    </tr>
+  )
+}
+
+const Cart = () => {
+  return (
+    <table>
+      <tr>
+        <td>Item</td>
+        <td>Price</td>
+        <td>Quantity</td>
+      </tr>
+    </table>
+  )
+}
+
+export default function Home() {
+  const [cart, setCart] = useState([]);
+
+  const addToCart = (id) => {
+    setCart(prevCart => {
+      const itemIndex = prevCart.findIndex(item => item.id === id); // Find cart object with id
+      if (itemIndex == -1) { //If absent
+        return [...prevCart, foodData.filter(x => x.id === id)[0]] //Add object from foodData with id
+      } else {
+        prevCart[itemIndex].quantity++; return prevCart; //Otherwise increment existing quantity
+      }
+    })
+  
+    console.log(cart)
+  }
+
+  return (
+    <div>
+    
     {/* <Cart></Cart> */}
-    <button onClick={()=>addToCart(1)}></button>
+    <button onClick={()=>addToCart('appetizer1')}></button>
     </div>
   );
 }
+
+// cart=[{id: "appetizer1", name: "Fries", price: 5, quantity: 1},
+//     {id: "appetizer2", name: "Mac & Cheese", price: 3, quantity: 1},
+//     {id: "appetizer3", name: "Cucumber Roll", price: 4, quantity: 1}]
