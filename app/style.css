@@ -1,0 +1,85 @@
+:root {
+    /*Dimensions for CSS Grid*/
+    --grid-column-width: 300px;
+    --grid-row-height: 200px;
+}
+
+h2 {
+    display: block;
+    text-align: center;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+header { /*Contains Cart Icon*/
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+
+    width: auto;
+    height: 100px;
+    background-color: burlywood;
+}
+
+body {
+    background-color: beige;
+}
+
+.container {
+    display: grid;
+    justify-content: center;
+    align-content: center;
+    grid-template-columns: repeat(3, var(--grid-column-width));
+    grid-template-rows: repeat(1, var(--grid-row-height));
+    grid-gap: 70px 30px;
+}
+
+.container > div > button {
+    width: 100%;
+}
+
+.container > div > img  { /*Menu Items */
+    width: 100%;
+    height: 100%;
+}
+
+button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+
+button:hover {
+    background-color: #218838;
+}
+
+/* cart Table */
+.cartTable-remove-button {
+    margin-top: 0;
+    padding: 5px;
+}
+
+#cartIcon {
+    padding-right: 20px;
+}
+
+#cartTable {
+    width: 600px;
+    max-width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left;
+}
+
+.cartTotalCell {
+    text-align: center;
+    font-weight: bold;
+    font-size: large;
+    padding-top: 20px;
+}
