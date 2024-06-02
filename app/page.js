@@ -16,17 +16,6 @@ const foodData = [ //Quantity=1 so this holds when adding to cart initially
     {id: "salad3", name: "Chicken Salad", price: 7, quantity: 1}
 ];
 
-const addToCart = (id) => {
-  console.log(id)
-
-  const itemIndex = cart.findIndex(item => item.id === id); // Find cart object with id
-  if (itemIndex == -1) { //If absent
-      cart.push(foodData.filter(x => x.id === id)[0]) //Add object from foodData with id
-  } else {
-      cart[itemIndex].quantity++; //Otherwise increment existing quantity
-  }
-}
-
 const MenuItem = (props) => {
   return (
     <div>
@@ -65,11 +54,30 @@ const Cart = () => {
 }
 
 export default function Home() {
+  const [cart, setCart] = useState([]);
+
+  const addToCart = (id) => {
+    setCart(prevCart => {
+      const itemIndex = prevCart.findIndex(item => item.id === id); // Find cart object with id
+      if (itemIndex == -1) { //If absent
+        return [...prevCart, foodData.filter(x => x.id === id)[0]] //Add object from foodData with id
+      } else {
+        prevCart[itemIndex].quantity++; return prevCart; //Otherwise increment existing quantity
+      }
+    })
+  
+    console.log(cart)
+  }
+
   return (
     <div>
-    <Menu></Menu>
+    
     {/* <Cart></Cart> */}
-    <button onClick={()=>addToCart(1)}></button>
+    <button onClick={()=>addToCart('appetizer1')}></button>
     </div>
   );
 }
+
+// cart=[{id: "appetizer1", name: "Fries", price: 5, quantity: 1},
+//     {id: "appetizer2", name: "Mac & Cheese", price: 3, quantity: 1},
+//     {id: "appetizer3", name: "Cucumber Roll", price: 4, quantity: 1}]
