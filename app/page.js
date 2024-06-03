@@ -43,8 +43,10 @@ const MenuItem = ({itemSrc, clickFunc}) => {
 const CartTable = ({JScart}) => {
   return (
     <table id="cartTable">
+      <tbody>
       {JScart.length > 0 ? <tr><td>Item</td><td>Price</td><td>Quantity</td></tr> : <tr></tr>} {/*Display header row only if cart is nonempty*/}
       {JScart.map(JSCartItem => <CartRow key={JSCartItem.id} cartItem={JSCartItem}/>)}
+      </tbody>
     </table>
   )
 }
