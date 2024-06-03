@@ -21,55 +21,59 @@ const Divider = () => <div><br></br><hr></hr><br></br></div>
 const Menu = ({addToCartFunc}) => {
   return (
     <div className="container">
-      {foodData.map(item => 
-        <MenuItem 
-        key={item.id} 
-          itemSrc={`food/${item.id}.jpg`} 
-          clickFunc={() => addToCartFunc(item.id)}>
-        </MenuItem>)}
+      {
+        foodData.map(item => 
+          <MenuItem
+            name={item.name} 
+            key={item.id} 
+            itemSrc={`food/${item.id}.jpg`} 
+            clickFunc={() => addToCartFunc(item.id)}>
+          </MenuItem>)
+      }
     </div>
   )
 }
 
-const MenuItem = ({itemSrc, clickFunc}) => {
+const MenuItem = ({name, itemSrc, clickFunc}) => {
   return (
     <div>
+      <h2>{name}</h2>
       <img src={itemSrc}></img>
       <button onClick={clickFunc}>Add To Cart</button>
     </div>
   )
 }
 
-const CartTable = ({JScart}) => {
+const CartTable = ({JScart, removeItemFunc}) => {
   return (
-    <table id="cartTable">
-      <tbody>
-      {JScart.length > 0 ? <tr><td>Item</td><td>Price</td><td>Quantity</td></tr> : <tr></tr>} {/*Display header row only if cart is nonempty*/}
-      {JScart.map(JSCartItem => <CartRow key={JSCartItem.id} cartItem={JSCartItem}/>)}
-      </tbody>
-    </table>
+    JScart.length > 0 
+    ? 
+      <table id="cartTable">
+        <tbody>
+        <tr><td>Item</td><td>Price</td><td>Quantity</td></tr>
+        {JScart.map(JSCartItem => 
+          <CartRow key={JSCartItem.id} removeFunc={removeItemFunc} cartItem={JSCartItem}/>)}
+        <tr><td className="cartTotalCell" colSpan={3}>Total: {JScart.reduce((s,x) => s + x.quantity*x.price, 0)}</td></tr>
+        </tbody>
+      </table>
+    : 
+      ''
   )
 }
 
-const CartRow = ({cartItem}) => {
+const CartRow = ({cartItem, removeFunc}) => {
   return (
     <tr>
       <td>{cartItem.name}</td>
       <td>{cartItem.price}</td>
       <td>{cartItem.quantity}</td>
-      <td><button>Remove</button></td>
+      <td><button onClick={() => removeFunc(cartItem.id)}>Remove</button></td>
     </tr>
   )
 }
 
-
 export default function Home() {
   const [cart, setCart] = useState([]);
-
-  // useEffect(() => { //Log whenever cart length changes (unfortunately object mutations aren't tracked)
-  //   console.log(cart);
-  // },[cart])
-
   const addToCart = (id) => {
     setCart(prevCart => {
       const itemIndex = prevCart.findIndex(item => item.id === id);
@@ -86,12 +90,15 @@ export default function Home() {
       return prevCart;
     });
   }
+  const removeFromCart = (id) => {
+    setCart(prevCart => prevCart.filter(x => x.id !== id))
+  }
   
   return (
     <div>
       <Menu addToCartFunc={addToCart}/>
       {cart.length > 0 ? <Divider/> : ''}
-      <CartTable JScart={cart}/>
+      <CartTable removeItemFunc={removeFromCart} JScart={cart}/>
     </div>
   );
 }
