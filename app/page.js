@@ -1,3 +1,5 @@
+//TD: Add functions for increasing and decreasing cart quantities 
+
 "use client";
 import Image from "next/image";
 import styles from "./page.module.css";
@@ -27,7 +29,7 @@ const Menu = ({addToCartFunc}) => {
             name={item.name} 
             key={item.id} 
             itemSrc={`food/${item.id}.jpg`} 
-            clickFunc={() => addToCartFunc(item.id)}>
+            clickFunc={() => addToCartFunc(item.id,1)}>
           </MenuItem>)
       }
     </div>
@@ -44,29 +46,33 @@ const MenuItem = ({name, itemSrc, clickFunc}) => {
   )
 }
 
-const CartTable = ({JScart, removeItemFunc}) => {
+const CartTable = ({JScart, removeItemFunc, updateItemFunc}) => {
   return (
     JScart.length > 0 
-    ? 
-      <table id="cartTable">
-        <tbody>
-        <tr><td>Item</td><td>Price</td><td>Quantity</td></tr>
-        {JScart.map(JSCartItem => 
-          <CartRow key={JSCartItem.id} removeFunc={removeItemFunc} cartItem={JSCartItem}/>)}
-        <tr><td className="cartTotalCell" colSpan={3}>Total: {JScart.reduce((s,x) => s + x.quantity*x.price, 0)}</td></tr>
-        </tbody>
-      </table>
+    ? <div>
+        <Divider/>
+        <table id="cartTable">
+          <tbody>
+          <tr><td>Item</td><td>Price</td><td>Quantity</td></tr>
+          {JScart.map(JSCartItem => 
+            <CartRow key={JSCartItem.id} removeFunc={removeItemFunc} cartItem={JSCartItem} updateFunc={updateItemFunc}/>)}
+          <tr><td className="cartTotalCell" colSpan={3}>Total: {JScart.reduce((s,x) => s + x.quantity*x.price, 0)}</td></tr>
+          </tbody>
+        </table>
+      </div>
     : 
       ''
   )
 }
 
-const CartRow = ({cartItem, removeFunc}) => {
+const CartRow = ({cartItem, removeFunc, updateFunc}) => {
   return (
     <tr>
       <td>{cartItem.name}</td>
       <td>{cartItem.price}</td>
       <td>{cartItem.quantity}</td>
+      <td><button onClick={() => updateFunc(cartItem.id, 1)}>+</button></td>
+      <td><button onClick={() => updateFunc(cartItem.id, -1)}>-</button></td>
       <td><button onClick={() => removeFunc(cartItem.id)}>Remove</button></td>
     </tr>
   )
@@ -74,7 +80,7 @@ const CartRow = ({cartItem, removeFunc}) => {
 
 export default function Home() {
   const [cart, setCart] = useState([]);
-  const addToCart = (id) => {
+  const addToCart = (id,q) => {
     setCart(prevCart => {
       const itemIndex = prevCart.findIndex(item => item.id === id);
   
@@ -83,22 +89,35 @@ export default function Home() {
         if (itemToAdd) return [...prevCart, itemToAdd];
       } else {
         const updatedCart = prevCart.map((item, index) => 
-          index === itemIndex ? { ...item, quantity: item.quantity + 1 } : item
-        );
+          index === itemIndex ? { ...item, quantity: item.quantity + q } : item);
+
+        if(prevCart[itemIndex].quantity === 0) {removeFromCart(id)} //The item gets deleted on the next render, not the render where it is set to 0
         return updatedCart;
       }
       return prevCart;
     });
   }
+
   const removeFromCart = (id) => {
     setCart(prevCart => prevCart.filter(x => x.id !== id))
   }
-  
+
+  // const changeQuantity = (id,q) => { 
+  //   setCart( prevCart => {
+  //     const i = prevCart.findIndex(item => item.id === id)
+  //     if(i !== 0) {
+  //       const prevItem = prevCart[i];
+  //       prevItem.quantity += q;
+  //       removeFromCart(id); 
+  //       return [...prevCart, prevItem]
+  //     } 
+  //   })
+  // }
+ 
   return (
     <div>
       <Menu addToCartFunc={addToCart}/>
-      {cart.length > 0 ? <Divider/> : ''}
-      <CartTable removeItemFunc={removeFromCart} JScart={cart}/>
+      <CartTable removeItemFunc={removeFromCart} updateItemFunc={addToCart} JScart={cart}/>
     </div>
   );
 }
