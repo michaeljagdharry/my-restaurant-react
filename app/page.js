@@ -90,9 +90,7 @@ export default function Home() {
       } else {
         const updatedCart = prevCart.map((item, index) => 
           index === itemIndex ? { ...item, quantity: item.quantity + q } : item);
-
-        if(prevCart[itemIndex].quantity === 0) {removeFromCart(id)} //The item gets deleted on the next render, not the render where it is set to 0
-        return updatedCart;
+        return updatedCart.filter(item => item.quantity > 0); //Remove items of 0 or negative quantity
       }
       return prevCart;
     });
@@ -101,18 +99,6 @@ export default function Home() {
   const removeFromCart = (id) => {
     setCart(prevCart => prevCart.filter(x => x.id !== id))
   }
-
-  // const changeQuantity = (id,q) => { 
-  //   setCart( prevCart => {
-  //     const i = prevCart.findIndex(item => item.id === id)
-  //     if(i !== 0) {
-  //       const prevItem = prevCart[i];
-  //       prevItem.quantity += q;
-  //       removeFromCart(id); 
-  //       return [...prevCart, prevItem]
-  //     } 
-  //   })
-  // }
  
   return (
     <div>
