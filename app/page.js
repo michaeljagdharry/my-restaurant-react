@@ -102,6 +102,7 @@ export default function Home() {
  
   return (
     <div>
+      <header><h1>Michael's Pump n' Dump</h1></header>
       <Menu addToCartFunc={addToCart}/>
       <CartTable removeItemFunc={removeFromCart} updateItemFunc={addToCart} JScart={cart}/>
     </div>
