@@ -2,7 +2,7 @@
 import Image from "next/image";
 import styles from "./page.module.css";
 import "./style.css";
-import  {useState} from 'react';
+import  {useEffect, useState} from 'react';
 
 const foodData = [ //Quantity=1 so this holds when adding to cart initially
     {id: "appetizer1", name: "Fries", price: 5, quantity: 1},
@@ -16,64 +16,80 @@ const foodData = [ //Quantity=1 so this holds when adding to cart initially
     {id: "salad3", name: "Chicken Salad", price: 7, quantity: 1}
 ];
 
-const MenuItem = (props) => {
-  return (
-    <div>
-      <img src={props.Src}></img>
-      <button onClick={() => addToCart(props.id)}>Add To Cart</button>
-    </div>
-  )
-}
+const Divider = () => <div><br></br><hr></hr><br></br></div>
 
-const Menu = () => {
+const Menu = ({addToCartFunc}) => {
   return (
     <div className="container">
-      {foodData.map(x => <MenuItem Src={`food/${x.id}.jpg`} id={x.id}></MenuItem>)}
+      {foodData.map(item => 
+        <MenuItem 
+        key={item.id} 
+          itemSrc={`food/${item.id}.jpg`} 
+          clickFunc={() => addToCartFunc(item.id)}>
+        </MenuItem>)}
     </div>
   )
 }
 
-const CartRow = (props) => {
+const MenuItem = ({itemSrc, clickFunc}) => {
   return (
-    <tr>
-      <td>{props}</td>
-    </tr>
+    <div>
+      <img src={itemSrc}></img>
+      <button onClick={clickFunc}>Add To Cart</button>
+    </div>
   )
 }
 
-const Cart = () => {
+const CartTable = ({JScart}) => {
   return (
-    <table>
-      <tr>
-        <td>Item</td>
-        <td>Price</td>
-        <td>Quantity</td>
-      </tr>
+    <table id="cartTable">
+      {JScart.length > 0 ? <tr><td>Item</td><td>Price</td><td>Quantity</td></tr> : <tr></tr>} {/*Display header row only if cart is nonempty*/}
+      {JScart.map(JSCartItem => <CartRow key={JSCartItem.id} cartItem={JSCartItem}/>)}
     </table>
   )
 }
 
+const CartRow = ({cartItem}) => {
+  return (
+    <tr>
+      <td>{cartItem.name}</td>
+      <td>{cartItem.price}</td>
+      <td>{cartItem.quantity}</td>
+      <td><button>Remove</button></td>
+    </tr>
+  )
+}
+
+
 export default function Home() {
   const [cart, setCart] = useState([]);
 
+  // useEffect(() => { //Log whenever cart length changes (unfortunately object mutations aren't tracked)
+  //   console.log(cart);
+  // },[cart])
+
   const addToCart = (id) => {
     setCart(prevCart => {
-      const itemIndex = prevCart.findIndex(item => item.id === id); // Find cart object with id
-      if (itemIndex == -1) { //If absent
-        return [...prevCart, foodData.filter(x => x.id === id)[0]] //Add object from foodData with id
-      } else {
-        prevCart[itemIndex].quantity++; return prevCart; //Otherwise increment existing quantity
-      }
-    })
+      const itemIndex = prevCart.findIndex(item => item.id === id);
   
-    console.log(cart)
+      if (itemIndex === -1) {
+        const itemToAdd = foodData.find(x => x.id === id);
+        if (itemToAdd) return [...prevCart, itemToAdd];
+      } else {
+        const updatedCart = prevCart.map((item, index) => 
+          index === itemIndex ? { ...item, quantity: item.quantity + 1 } : item
+        );
+        return updatedCart;
+      }
+      return prevCart;
+    });
   }
-
+  
   return (
     <div>
-    
-    {/* <Cart></Cart> */}
-    <button onClick={()=>addToCart('appetizer1')}></button>
+      <Menu addToCartFunc={addToCart}/>
+      {cart.length > 0 ? <Divider/> : ''}
+      <CartTable JScart={cart}/>
     </div>
   );
 }

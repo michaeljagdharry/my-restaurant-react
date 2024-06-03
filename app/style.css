@@ -1,7 +1,7 @@
 :root {
     /*Dimensions for CSS Grid*/
     --grid-column-width: 300px;
-    --grid-row-height: 200px;
+    --grid-row-height: 300px;
 }
 
 h2 {
@@ -26,12 +26,14 @@ body {
 }
 
 .container {
+    margin-top: 60px;
+    margin-bottom: 100px;
     display: grid;
     justify-content: center;
     align-content: center;
     grid-template-columns: repeat(3, var(--grid-column-width));
-    grid-template-rows: repeat(1, var(--grid-row-height));
-    grid-gap: 70px 30px;
+    grid-auto-rows: var(--grid-row-height); /* Auto-generate rows */
+    grid-gap: 120px 72px;
 }
 
 .container > div > button {
@@ -59,6 +61,15 @@ button:hover {
     background-color: #218838;
 }
 
+.menu-item {
+    margin-bottom: 16px; /* Ensure enough space at the bottom */
+}
+
+hr {
+    margin-bottom: 30px; 
+    clear: both;
+}
+
 /* cart Table */
 .cartTable-remove-button {
     margin-top: 0;
@@ -74,6 +85,7 @@ button:hover {
     max-width: 50%;
     margin-left: auto;
     margin-right: auto;
+    margin-bottom: 38px;
     text-align: left;
 }
 
